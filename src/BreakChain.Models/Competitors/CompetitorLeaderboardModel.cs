@@ -2,16 +2,16 @@
 
 namespace BreakChain.Models.Competitors
 {
-    public class CompetitorListModel
+    public class CompetitorLeaderboardModel
     {
         public string Name { get; set; }
         public long Wallet { get; set; }
         public int Wins { get; set; }
         public int Losses { get; set; }
 
-        public CompetitorListModel() { }
+        public CompetitorLeaderboardModel() { }
 
-        public CompetitorListModel(Competitor competitor)
+        public CompetitorLeaderboardModel(Competitor competitor)
         {
             Name = competitor.Name;
             Wallet = competitor.Wallet;

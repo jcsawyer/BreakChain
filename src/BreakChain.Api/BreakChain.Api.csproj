@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BreakChain.Data\BreakChain.Data.csproj" />
+    <ProjectReference Include="..\BreakChain.Models\BreakChain.Models.csproj" />
   </ItemGroup>
 
 

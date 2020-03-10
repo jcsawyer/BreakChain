@@ -15,6 +15,8 @@ namespace BreakChain.Data.Entities
         public string LosingCompetitorId { get; set; }
         public virtual Competitor LosingCompetitor { get; set; }
 
+        public long CurrentFoulPot { get; set; }
+
         public Match() : base()
         {
 

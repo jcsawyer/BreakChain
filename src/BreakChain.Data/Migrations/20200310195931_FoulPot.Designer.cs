@@ -4,14 +4,16 @@ using BreakChain.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BreakChain.Data.Migrations
 {
     [DbContext(typeof(BreakChainDbContext))]
-    partial class BreakChainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200310195931_FoulPot")]
+    partial class FoulPot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

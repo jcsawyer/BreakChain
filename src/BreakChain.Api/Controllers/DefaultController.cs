@@ -30,6 +30,10 @@ namespace BreakChain.Api.Controllers
         public async Task<IActionResult> Leaderboard()
             => Ok(await _db.Comptetitors.OrderByDescending(x => x.Wallet).ToListAsync());
 
+        [HttpGet("FoulPot")]
+        public async Task<IActionResult> FoulPot()
+            => Ok((await _db.Matches.OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync()).CurrentFoulPot);
+
         [HttpPost("AddCompetitor")]
         public async Task<IActionResult> AddCompetitor(AddCompetitorModel addCompetitorModel)
         {
