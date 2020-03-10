@@ -26,6 +26,21 @@ namespace BreakChain.Data
 
             builder.Entity<MatchCompetitor>().HasOne("Match").WithMany("Competitors").HasForeignKey("MatchId");
             builder.Entity<MatchCompetitor>().HasOne("Competitor").WithMany("Matches").HasForeignKey("CompetitorId");
+
+            SeedData(builder);
+        }
+
+        private void SeedData(ModelBuilder builder)
+        {
+            builder.Entity<Competitor>(x =>
+            {
+                x.HasData(
+                    new Competitor() { Name = "Joseph" },
+                    new Competitor() { Name = "Chris" },
+                    new Competitor() { Name = "Mark" },
+                    new Competitor() { Name = "Phil" },
+                    new Competitor() { Name = "James" });
+            });
         }
     }
 }

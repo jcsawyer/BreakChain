@@ -7,9 +7,9 @@ namespace BreakChain.Data.Entities
     public class Competitor : Entity
     {
         public string Name { get; set; }
-        public long Wallet { get; set; }
-        public int Wins { get; set; }
-        public int Losses { get; set; }
+        public long Wallet { get; set; } = 200;
+        public int Wins { get; set; } = 0;
+        public int Losses { get; set; } = 0;
 
         public virtual ICollection<MatchCompetitor> Matches { get; set; }
         public virtual ICollection<Match> MatchWins { get; set; }
