@@ -48,6 +48,19 @@ namespace BreakChain.Api.Controllers
                 .ToListAsync());
         }
 
+        [HttpGet("Competitor/{competitorId}")]
+        public async Task<IActionResult> Competitor(string competitorId)
+        {
+            if (string.IsNullOrEmpty(competitorId))
+                return BadRequest($"{nameof(competitorId)} cannot be empty");
+
+            return Ok(await _db.Comptetitors
+                .Include(x => x.MatchWins.Take(5))
+                .Include(x => x.MatchLosses.Take(5))
+                .FirstOrDefaultAsync(x => x.Id == competitorId));
+        }
+
+
         [HttpPost("AddCompetitor")]
         public async Task<IActionResult> AddCompetitor(AddCompetitorModel addCompetitorModel)
         {
