@@ -55,9 +55,28 @@ namespace BreakChain.Api.Controllers
                 return BadRequest($"{nameof(competitorId)} cannot be empty");
 
             return Ok(await _db.Competitors
-                .Include(x => x.MatchWins.Take(5))
-                .Include(x => x.MatchLosses.Take(5))
+                .Include(x => x.MatchWins.OrderByDescending(x => x.Timestamp).Take(5))
+                .Include(x => x.MatchLosses.OrderByDescending(x => x.Timestamp).Take(5))
                 .FirstOrDefaultAsync(x => x.Id == competitorId));
+        }
+
+        [HttpGet("Competitor/{competitorId}/Matches/{page?}/{size?}")]
+        public async Task<IActionResult> CompetitorMatches(string competitorId, int page = 1, int size = 10)
+        {
+            if (string.IsNullOrEmpty(competitorId))
+                return BadRequest($"{nameof(competitorId)} cannot be empty");
+
+            if (page < 1) page = 1;
+            if (size < 1) size = 10;
+
+            return Ok(await _db.Matches
+                .Include(x => x.WinningCompetitor)
+                .Include(x => x.LosingCompetitor)
+                .OrderByDescending(x => x.Timestamp)
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Where(x => x.WinningCompetitorId == competitorId || x.LosingCompetitorId == competitorId)
+                .ToListAsync());
         }
 
 
