@@ -34,6 +34,20 @@ namespace BreakChain.Api.Controllers
         public async Task<IActionResult> FoulPot()
             => Ok((await _db.Matches.OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync()).CurrentFoulPot);
 
+        [HttpGet("Matches/{page?}/{size?}")]
+        public async Task<IActionResult> Matches(int page = 1, int size = 10)
+        {
+            if (page < 1) page = 1;
+            if (size < 1) size = 10;
+
+            return Ok(await _db.Matches
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Include(x => x.WinningCompetitor)
+                .Include(x => x.LosingCompetitor)
+                .ToListAsync());
+        }
+
         [HttpPost("AddCompetitor")]
         public async Task<IActionResult> AddCompetitor(AddCompetitorModel addCompetitorModel)
         {
