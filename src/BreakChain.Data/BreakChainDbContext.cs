@@ -23,6 +23,8 @@ namespace BreakChain.Data
             builder.Entity<Match>().HasMany("Competitors").WithOne("Match").HasForeignKey("MatchId");
             builder.Entity<Match>().HasOne("WinningCompetitor").WithMany("MatchWins").HasForeignKey("WinningCompetitorId");
             builder.Entity<Match>().HasOne("LosingCompetitor").WithMany("MatchLosses").HasForeignKey("LosingCompetitorId");
+            builder.Entity<Match>().OwnsOne(x => x.WinningCompetitorStats);
+            builder.Entity<Match>().OwnsOne(x => x.LosingCompetitorStats);
 
             builder.Entity<MatchCompetitor>().HasOne("Match").WithMany("Competitors").HasForeignKey("MatchId");
             builder.Entity<MatchCompetitor>().HasOne("Competitor").WithMany("Matches").HasForeignKey("CompetitorId");
