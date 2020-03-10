@@ -28,7 +28,7 @@ namespace BreakChain.Api.Controllers
 
         [HttpGet("Leaderboard")]
         public async Task<IActionResult> Leaderboard()
-            => Ok(await _db.Comptetitors.OrderByDescending(x => x.Wallet).ToListAsync());
+            => Ok(await _db.Competitors.OrderByDescending(x => x.Wallet).ToListAsync());
 
         [HttpGet("FoulPot")]
         public async Task<IActionResult> FoulPot()
@@ -54,7 +54,7 @@ namespace BreakChain.Api.Controllers
             if (string.IsNullOrEmpty(competitorId))
                 return BadRequest($"{nameof(competitorId)} cannot be empty");
 
-            return Ok(await _db.Comptetitors
+            return Ok(await _db.Competitors
                 .Include(x => x.MatchWins.Take(5))
                 .Include(x => x.MatchLosses.Take(5))
                 .FirstOrDefaultAsync(x => x.Id == competitorId));
@@ -69,7 +69,7 @@ namespace BreakChain.Api.Controllers
 
             var newCompetitor = new Competitor() { Name = addCompetitorModel.Name };
 
-            await _db.Comptetitors.AddAsync(newCompetitor);
+            await _db.Competitors.AddAsync(newCompetitor);
             await _db.SaveChangesAsync();
 
             return Ok(newCompetitor);

@@ -9,7 +9,7 @@ namespace BreakChain.Data
 {
     public class BreakChainDbContext : DbContext
     {
-        public DbSet<Competitor> Comptetitors { get; set; }
+        public DbSet<Competitor> Competitors { get; set; }
         public DbSet<Match> Matches { get; set; }
         public DbSet<MatchCompetitor> MatchCompetitors { get; set; }
 
