@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BreakChain.Data;
 using BreakChain.Data.Entities;
 using BreakChain.Models.Competitors;
+using BreakChain.Models.Matches;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ namespace BreakChain.Api.Controllers
 
         [HttpGet("FoulPot")]
         public async Task<IActionResult> FoulPot()
-            => Ok((await _db.Matches.OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync()).CurrentFoulPot);
+            => Ok((await _db.Matches.OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync())?.CurrentFoulPot);
 
         [HttpGet("Matches/{page?}/{size?}")]
         public async Task<IActionResult> Matches(int page = 1, int size = 10)
@@ -79,6 +80,45 @@ namespace BreakChain.Api.Controllers
                 .ToListAsync());
         }
 
+        [HttpPost("AddMatch")]
+        public async Task<IActionResult> AddMatch(AddMatchModel addMatchModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var winnerCompetitor = await _db.Competitors.FindAsync(addMatchModel.WinnerCompetitor.CompetitorId);
+            if (winnerCompetitor == null)
+                return BadRequest("Winner competitor does not exist");
+            var losingCompetitor = await _db.Competitors.FindAsync(addMatchModel.LosingCompetitor.CompetitorId);
+            if (losingCompetitor == null)
+                return BadRequest("Losing competitor does not exist");
+
+            winnerCompetitor.Wins += 1;
+            winnerCompetitor.Wallet += addMatchModel.WinnerCompetitor.TrickShots + (addMatchModel.WinnerCompetitor.CalledTrickShots * 5) - addMatchModel.WinnerCompetitor.Fouls;
+            losingCompetitor.Losses += 1;
+            losingCompetitor.Wallet += addMatchModel.LosingCompetitor.TrickShots + (addMatchModel.LosingCompetitor.CalledTrickShots * 5) - addMatchModel.LosingCompetitor.Fouls;
+
+            var currentFoulPot = (await _db.Matches.OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync())?.Stake;
+
+            var newMatch = new Match()
+            {
+                Stake = addMatchModel.Stake,
+                CurrentFoulPot = addMatchModel.LosingCompetitor.Fouls + addMatchModel.WinnerCompetitor.Fouls
+            };
+
+            _db.Competitors.Update(winnerCompetitor);
+            _db.Competitors.Update(losingCompetitor);
+            await _db.AddAsync(newMatch);
+            await _db.SaveChangesAsync();
+
+            var winnerMatchCompetitor = new MatchCompetitor() { CompetitorId = addMatchModel.WinnerCompetitor.CompetitorId, MatchId = newMatch.Id };
+            var loserMatchCompetitor = new MatchCompetitor() { CompetitorId = addMatchModel.LosingCompetitor.CompetitorId, MatchId = newMatch.Id };
+
+            await _db.AddRangeAsync(new { winnerMatchCompetitor, loserMatchCompetitor });
+            await _db.SaveChangesAsync();
+
+            return Ok(newMatch.Id);
+        }
 
         [HttpPost("AddCompetitor")]
         public async Task<IActionResult> AddCompetitor(AddCompetitorModel addCompetitorModel)
