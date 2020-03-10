@@ -35,6 +35,18 @@ namespace BreakChain.Api.Controllers
         public async Task<IActionResult> FoulPot()
             => Ok((await _db.Matches.OrderByDescending(x => x.Timestamp).FirstOrDefaultAsync())?.CurrentFoulPot);
 
+        [HttpGet("Match/{matchId}")]
+        public async Task<IActionResult> Match(string matchId)
+        {
+            if (string.IsNullOrEmpty(matchId))
+                return BadRequest($"{nameof(matchId)} cannot be empty");
+
+            return Ok(await _db.Matches
+                .Include(x => x.WinningCompetitor)
+                .Include(x => x.LosingCompetitor)
+                .FirstOrDefaultAsync(x => x.Id == matchId));
+        }
+
         [HttpGet("Matches/{page?}/{size?}")]
         public async Task<IActionResult> Matches(int page = 1, int size = 10)
         {
